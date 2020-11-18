@@ -1,0 +1,293 @@
+﻿
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="CSS/stylesheet.css" type="text/css" />
+    <title>NWS Query</title>
+</head>
+
+
+<body>
+    <header>
+        <nav id="HeaderWrap" class="BottomBorder">
+            <h1>Menu</h1>
+            <ul>
+                <li><a href="./Index.html">Index</a></li>
+                <li><a href="./WeatherStations.html">Weather Stations</a></li>
+                <li><a href="./NWSQuery1.html">NWS Query</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="container">
+        <h2>NWS Station Data</h2>
+
+        <div class="form-group row">
+            <label for="limit" class="col-sm-2 col-form-label">Limit</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="limit" placeholder="Limit" value="0">
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="offset" class="col-sm-2 col-form-label">Offset</label>
+            <div class="col-sm-10">
+                <input type="number" class="form-control" id="offset" placeholder="Offset" value="0">
+            </div>
+        </div>
+
+        <section>
+            <div style="margin-bottom: 1rem;">
+                <select id="state" class="form-control">
+                    <option selected disabled>Select State</option>
+                    <option value="AL">AL</option>
+                    <option value="AK">AK</option>
+                    <option value="AZ">AZ</option>
+                    <option value="AR">AR</option>
+                    <option value="CA">CA</option>
+                    <option value="CO">CO</option>
+                    <option value="CT">CT</option>
+                    <option value="DE">DE</option>
+                    <option value="FL">FL</option>
+                    <option value="GA">GA</option>
+                    <option value="HI">HI</option>
+                    <option value="ID">ID</option>
+                    <option value="IL">IL</option>
+                    <option value="IN">IN</option>
+                    <option value="IA">IA</option>
+                    <option value="KS">KS</option>
+                    <option value="KY">KY</option>
+                    <option value="LA">LA</option>
+                    <option value="ME">ME</option>
+                    <option value="MD">MD</option>
+                    <option value="MA">MA</option>
+                    <option value="MI">MI</option>
+                    <option value="MN">MN</option>
+                    <option value="MS">MS</option>
+                    <option value="MO">MO</option>
+                    <option value="MT">MT</option>
+                    <option value="NE">NE</option>
+                    <option value="NV">NV</option>
+                    <option value="NH">NH</option>
+                    <option value="NJ">NJ</option>
+                    <option value="NM">NM</option>
+                    <option value="NY">NY</option>
+                    <option value="NC">NC</option>
+                    <option value="ND">ND</option>
+                    <option value="OH">OH</option>
+                    <option value="OK">OK</option>
+                    <option value="OR">OR</option>
+                    <option value="PA">PA</option>
+                    <option value="RI">RI</option>
+                    <option value="SC">SC</option>
+                    <option value="SD">SD</option>
+                    <option value="TN">TN</option>
+                    <option value="TX">TX</option>
+                    <option value="UT">UT</option>
+                    <option value="VT">VT</option>
+                    <option value="VA">VA</option>
+                    <option value="WA">WA</option>
+                    <option value="WV">WV</option>
+                    <option value="WI">WI</option>
+                    <option value="WY">WY</option>
+                </select>
+            </div>
+
+            <table id="table1" class="table" style="display: none">
+                <thead>
+                    <tr>
+                        <td>Station ID</td>
+                        <td>State</td>
+                        <td>Latitude</td>
+                        <td>Longitude</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
+
+        <section>
+            <h2>NWS Location Query</h2>
+
+            <div style="margin-bottom: 1rem;">
+                <select id="locations" class="form-control">
+                    <option selected disabled>Location Category:</option>
+                </select>
+            </div>
+
+            <table id="table2" class="table" style="display: none">
+                <thead>
+                    <tr>
+                        <td>ID</td>
+                        <td>Name</td>
+                        <td>Min Date</td>
+                        <td>Max Date</td>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </section>
+    </div>
+    <footer id="FooterWrap" class="BottomBorder">
+        <address>
+            &copy;Tanner Cunningham<br />
+        </address>
+    </footer>
+
+    <script>
+        function xmlToJson(xml) {
+            var obj = {};
+
+            if (xml.nodeType == 1) {
+                if (xml.attributes.length > 0) {
+                    obj["@attributes"] = {};
+                    for (var j = 0; j < xml.attributes.length; j++) {
+                        var attribute = xml.attributes.item(j);
+                        obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
+                    }
+                }
+            } else if (xml.nodeType == 3) {
+                obj = xml.nodeValue;
+            }
+
+
+            if (xml.hasChildNodes()) {
+                for (var i = 0; i < xml.childNodes.length; i++) {
+                    var item = xml.childNodes.item(i);
+                    var nodeName = item.nodeName;
+                    if (typeof (obj[nodeName]) == "undefined") {
+                        obj[nodeName] = xmlToJson(item);
+                    } else {
+                        if (typeof (obj[nodeName].push) == "undefined") {
+                            var old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        obj[nodeName].push(xmlToJson(item));
+                    }
+                }
+            }
+            return obj;
+        };
+
+        document.addEventListener('change', (e) => {
+            if (e.target.id !== 'state') {
+                return null
+            }
+
+            getStationsByState()
+        })
+
+        document.addEventListener('change', e => {
+            if (e.target.id !== 'locations') {
+                return null
+            }
+
+            const table = document.querySelector('#table2')
+            table.style.display = 'table'
+
+            const tbody = document.querySelector('#table2 tbody')
+
+            const limit = document.getElementById('limit').value
+            const offset = document.getElementById('offset').value
+
+            tbody.innerHTML = ''
+
+            fetch(`https://www.ncdc.noaa.gov/cdo-web/api/v2/locations?locationcategoryid=${e.target.value}&limit=${limit | '25'}&offset=${offset | '0'}`, {
+                method: 'GET',
+                headers: {
+                    'token': 'vczOaCmkCxBVQHkKGXeVcGoNcrzjdBab'
+                }
+            })
+                .then(res => res.json())
+                .then(res => {
+                    res.results.forEach((result, index) => {
+                        const el = document.createElement('tr')
+
+                        el.innerHTML = `
+                            <td>${result.id}</td>
+                            <td>${result.name}</td>
+                            <td>${result.mindate}</td>
+                            <td>${result.maxdate}</td>
+                        `
+
+                        tbody.appendChild(el)
+                    })
+                })
+        })
+
+        const populateLocations = () => {
+            const locationsSelect = document.getElementById('locations')
+
+            const limit = document.getElementById('limit').value
+            const offset = document.getElementById('offset').value
+
+            fetch(`https://www.ncdc.noaa.gov/cdo-web/api/v2/locationcategories?limit=${limit | '25'}&offset=${offset | '0'}`, {
+                method: 'GET',
+                headers: {
+                    'token': 'vczOaCmkCxBVQHkKGXeVcGoNcrzjdBab'
+                }
+            })
+                .then(res => res.json())
+                .then(res => {
+                    res.results.forEach((result, index) => {
+                        const el = document.createElement('option')
+                        el.value = result.id
+
+                        el.textContent = result.name
+
+                        locationsSelect.appendChild(el)
+                    })
+                })
+        }
+        populateLocations()
+
+        const getStationsByState = () => {
+            const state = document.getElementById('state').value
+
+            const table = document.querySelector('#table1')
+
+            table.style.display = 'table'
+
+            const tbody = document.querySelector('#table1 tbody')
+
+            tbody.innerHTML = ''
+
+            fetch(`https://w1.weather.gov/xml/current_obs/index.xml?limit=${limit | '25'}&offset=${offset | '0'}`, {
+                method: 'GET',
+            })
+                .then(res => res.text())
+                .then(str => (new window.DOMParser()).parseFromString(str, "text/xml"))
+                .then(xml => {
+                    const json = xmlToJson(xml)
+
+                    json.wx_station_index.station.forEach((station, index) => {
+                        if (station.state['#text'] === state) {
+                            const el = document.createElement('tr')
+
+                            el.innerHTML = `
+                                    <td>${station.station_id['#text']}</td>
+                                    <td>${station.state['#text']}</td>
+                                    <td>${station.latitude['#text']}</td>
+                                    <td>${station.longitude['#text']}</td>
+                                `
+
+                            tbody.appendChild(el)
+                        }
+                    })
+
+                    if (!tbody.innerHTML === '') {
+                        tbody.innerHTML = '<p>No results</p>'
+                    }
+                })
+        }
+    </script>
+</body>
+</html>
+<!-- 490 -->

@@ -1,0 +1,25 @@
+#HeaderWrap {
+    font-size: 18pt;
+    background-color: #303030;
+    color: #FFFFFF;
+    padding-left: 5px;
+    padding-right: 10px;
+    text-align: center;
+}
+li {
+    list-style: none;
+    text-indent: 0px;
+    display: inline;
+}
+body {
+    height: 100%;
+    text-align: center;
+    background-color: #CFCFCF;
+    font-family:Cambria;
+}
+#FooterWrap {
+    text-align: right;
+    background-color: #1F1F1F;
+    color: #FFFFFF;
+    padding-right: 10px;
+}
